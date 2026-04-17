@@ -1,11 +1,11 @@
 import pandas as pd
 import plotly.express as px
-from sqlalchemy import func,case    
+from sqlalchemy import func    
 from app.models import Session, Medailles, Pays
 
 
 
-def afficher_carte_medailles():
+def afficher_carte_medailles(annee_range=None):
     session = Session()
     # Récupération des données : nombre total de médailles par pays
     results = session.query(
@@ -13,9 +13,16 @@ def afficher_carte_medailles():
         func.count(Medailles.Medal)\
             .label("total_medals"))\
             .filter(Medailles.Year)\
-            .group_by(Medailles.Country).all()
+            .group_by(Medailles.Country).filter(Medailles.Year.between(annee_range[0], annee_range[1]))
+    
+
+
     pays = session.query(Pays.Country, Pays.Code).all()
+
+   
     session.close()
+   
+   
     # Création du DataFrame
     df_query = pd.DataFrame(results, columns=["Country", "total_medals"])
     df_query = df_query.sort_values(by="total_medals", ascending=False)

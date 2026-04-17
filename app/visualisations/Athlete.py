@@ -13,6 +13,7 @@ def top_sports(filtre_saison:str = "Toutes"):
         Medailles.Season,
         func.count(Medailles.Sport).label("total")
     ).group_by(Medailles.Sport, Medailles.Season)
+
     if filtre_saison != "Toutes":
         results = results.filter(Medailles.Season == filtre_saison)
     
@@ -68,7 +69,7 @@ def top_athletes(filtre_saison:str = "Toutes"):
     if filtre_saison != "Toutes":
         results = results.filter(Medailles.Season == filtre_saison)
 
-    results = results.limit(20).all()ex
+    results = results.limit(20).all()
     
     session.close()
 

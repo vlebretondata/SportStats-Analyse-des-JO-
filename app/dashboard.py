@@ -156,7 +156,7 @@ with tab2:
 with tab3:
     # Affichage de la carte des médailles
     st.subheader("Géopolitique des médailles")
-    fig = afficher_carte_medailles()
+    fig = afficher_carte_medailles(annee_range)
     st.plotly_chart(fig, width='stretch')
     
     # Graphique PIB par habitant vs nombre de médailles

@@ -16,6 +16,8 @@ def parite_medailles_hommes_femmes_cumule():
         .group_by(Medailles.Year)\
         .order_by(Medailles.Year)\
         .all()
+    
+
     session.close()
     df = pd.DataFrame(results, columns=["Year", "total_hommes", "total_femmes"])
     df["total_hommes"] = df["total_hommes"].cumsum()
