@@ -1,3 +1,5 @@
+# ── Imports ───────────────────────────────────────────────────────
+
 import streamlit as st
 from app.auth import login_user
 import pandas as pd
@@ -33,16 +35,19 @@ from app.visualisations.Athlete import(
 
 
 # ── Configuration de la page ──────────────────────────────────────
+    # On configure le titre, l'icône et la mise en page de notre dashboard Streamlit
 st.set_page_config(
-    page_title="SportStats",
+    page_title="Analyse des JO - SportStats",
     page_icon="🏅",
     layout="wide"
 ) 
 # ── Authentification ─────────────────────────────────────────────
 
+    # On utilise une session Streamlit pour stocker l'état d'authentification de l'utilisateur
+# Si l'utilisateur n'est pas authentifié, affichage du formulaire de connexion
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
-
+# Tant que l'utilisateur n'est pas authentifié, affichage du formulaire de connexion
 if not st.session_state.authenticated:
     st.title("🔐 Accès sécurisé - SportStats")
     
@@ -53,22 +58,25 @@ if not st.session_state.authenticated:
         submit = st.form_submit_button("Entrer sur le terrain")
         
         if submit:
-            # On vérifie avec ta fonction auth.py (qui renvoie un token ou None)
+            # On vérifie avec la fonction de auth.py qui retourne un token JWT si les identifiants sont corrects
             token = login_user(username, password)
             
             if token: # Si le token existe, la connexion est valide
                 st.session_state.authenticated = True
                 st.rerun() # On recharge la page pour passer le blocage !
             else:
-                st.error("Identifiants incorrects, carton rouge ! 🟥")
+                st.error("Identifiants incorrects")
                 
-    st.stop() # 🛑 L'AGENT DE SÉCURITÉ : on arrête l'exécution du code ici.
+    st.stop() # on arrete l'exécution du reste du code tant que l'utilisateur n'est pas authentifié
+
+
 
 # ── Dashboard principal ───────────────────────────────────────────
-st.title("🏅 Analyse des JO")
+st.title("🏅 Analyse des JO - SportStats")
 
 
 # ── KPIs ──────────────────────────────────────────────────────────
+    # affichege des 6 KPIs une ligne de 6 colonnes
 col1, col2, col3,col4,col5,col6 = st.columns(6)
 
 col1.metric("🌍 Pays représentés", kpi_total_pays())
@@ -78,13 +86,13 @@ col4.metric("❄️ JO d'hiver", kpi_jo_winter())
 col5.metric("👩 Femmes médaillées", kpi_femmes_medaillees())
 col6.metric("👨 Hommes médaillés", kpi_hommes_medailles())
 
-
-
+    # ligne de séparation
 st.divider()
 
 # ── Filtres sidebar ───────────────────────────────────────────────
-
+    # création d'une barre latérale pour les filtres
 st.sidebar.header("Filtres")
+    # récupere les filtres contenus dans visualisations/Filtres.py et les affiche dans la sidebar
 saison_filtre = st.sidebar.selectbox("Saison", filtres_saisons())
 sport_filtre = st.sidebar.selectbox("Sport", ["Tous"] + sorted(filtres_sports()))
 bornes = filtres_annees_range()
@@ -92,17 +100,19 @@ annee_range   = annee_range = st.sidebar.slider(    "Années",
     min_value=int(bornes[0]),    
     max_value=int(bornes[1]),    
     value=(int(bornes[0]), int(bornes[1])))
-
 genre= st.sidebar.selectbox("Genre", filtres_genres())
 pays=st.sidebar.selectbox("Pays", ["Tous"] + sorted(filtres_pays()))
 
-if st.sidebar.button("Se déconnecter 🚪"):
+    # bouton de déconnexion
+if st.sidebar.button("Se déconnecter"):
     st.session_state.authenticated = False
     st.rerun()
 
 # ── Onglets ───────────────────────────────────────────────────────
+    # création de 3 onglets
 tab1, tab2, tab3 = st.tabs([ "🏆 Sports et athlètes", "👩👨 Parité","🗺️ Géopolitique"])
 
+# 1er onglet : top sports et top athlètes
 with tab1:
     
     # Top sports
@@ -115,7 +125,7 @@ with tab1:
     fig = top_athletes()
     st.plotly_chart(fig, width='stretch')
 
-
+#2ème onglet : parité hommes/femmes
 with tab2:
     # Parité hommes/femmes cumulé à travers les années
     st.subheader("Parité hommes/femmes (cumulé) à travers les années")
@@ -127,7 +137,7 @@ with tab2:
     fig = parite_medailles_hommes_femmes_parJO()
     st.plotly_chart(fig, width='stretch')
     
-    # Top sports femmes vs hommes
+    # Ajout de 2 colonnes pour Top sports femmes vs hommes
     col1, col2 = st.columns(2)
     
     #top sports femmes
@@ -141,7 +151,8 @@ with tab2:
         st.subheader("Top 10 des sports les plus médaillés par les hommes")
         fig = top_sports_hommes()
         st.plotly_chart(fig, width='stretch')
-
+    
+# 3ème onglet : géopolitique des médailles   
 with tab3:
     # Affichage de la carte des médailles
     st.subheader("Géopolitique des médailles")

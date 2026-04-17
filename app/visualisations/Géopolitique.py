@@ -47,7 +47,7 @@ def graph_gdp_medals():
     session.close()
     # Conversion en DataFrame
     df = pd.DataFrame(results, columns=["Country", "GDP_per_Capita", "Population", "Total_Medals"])
-    #graphique de dispersion : PIB par habitant vs nombre de médailles, avec la taille des points représentant la population
+    #nuage de points : PIB par habitant vs nombre de médailles, avec la taille des points représentant la population
     fig = px.scatter(
         df,
         x="GDP_per_Capita",

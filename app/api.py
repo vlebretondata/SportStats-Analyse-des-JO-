@@ -12,7 +12,6 @@ app = Flask(__name__)
 @app.route("/api/countries/medals")
 def api_countries_medals():
     session = Session()
-
     results = session.query(
         Medailles.Country,
         func.count(Medailles.Medal).label("total_medals")

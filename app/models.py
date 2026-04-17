@@ -1,11 +1,17 @@
 from sqlalchemy import create_engine, Column, Integer, String, Float
 from sqlalchemy.orm import declarative_base, sessionmaker
 
+# Configuration de la base de données
+
+# Création de l'engine et de la session 
 engine = create_engine("sqlite:///sportstats.db")
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
 
 
+# Définition des modèles SQLAlchemy
+
+# Modèle pour les médailles
 class Medailles(Base):
     __tablename__ = "Medailles"
 
@@ -20,8 +26,9 @@ class Medailles(Base):
     Event      = Column(String)
     Medal      = Column(String)
     Season     = Column(String)
+    Points     = Column(Integer)  
 
-
+# Modèle pour les pays
 class Pays(Base):
     __tablename__ = "Pays"
 
@@ -31,6 +38,7 @@ class Pays(Base):
     Population     = Column(Integer)
     GDP_per_Capita = Column(Float)
 
+# Modèle pour les utilisateurs(pour les futures fonctionnalités d'authentification et de gestion des utilisateurs)
 class User(Base):
     __tablename__ = "Users"
 
@@ -40,6 +48,7 @@ class User(Base):
     role     = Column(String, default="user")
 
 
+# Fonction pour initialiser la base de données (à appeler une seule fois)
 def init_db():
     Base.metadata.create_all(engine)
     print("Base de données initialisée !")
