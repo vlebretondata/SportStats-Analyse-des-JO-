@@ -117,12 +117,12 @@ with tab1:
     
     # Top sports
     st.subheader("Top 20 des sports les plus médaillés")
-    fig2 = top_sports()
+    fig2 = top_sports(saison_filtre)
     st.plotly_chart(fig2, width='stretch')
 
     # Top athlètes
     st.subheader("Top 20 des athlètes les plus médaillés")
-    fig = top_athletes()
+    fig = top_athletes(saison_filtre)
     st.plotly_chart(fig, width='stretch')
 
 #2ème onglet : parité hommes/femmes

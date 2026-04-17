@@ -1,18 +1,23 @@
 import pandas as pd
 import plotly.express as px
-from sqlalchemy import func,case    
+from sqlalchemy import func,case,text    
 from app.models import Session, Medailles, Pays
 
-def top_sports():
-
+def top_sports(filtre_saison:str = "Toutes"):
+    if filtre_saison not in ["Toutes", "Summer", "Winter"]:
+        return None  # ou une figure vide, ou un message d'erreur
     session = Session()
 
     results = session.query(
         Medailles.Sport,
         Medailles.Season,
         func.count(Medailles.Sport).label("total")
-    ).group_by(Medailles.Sport, Medailles.Season).all()
+    ).group_by(Medailles.Sport, Medailles.Season)
+    if filtre_saison != "Toutes":
+        results = results.filter(Medailles.Season == filtre_saison)
+    
     session.close()
+    
     df_query = pd.DataFrame(results, columns=["Sport", "Season", "total"])
     df_query = df_query.sort_values("total", ascending=False)
  
@@ -31,7 +36,7 @@ def top_sports():
         color_discrete_map={"Summer": "#F1E31E", "Winter": "#DBDEE9"}
     )
 
-   # 2. LA CLÉ : On force Plotly à trier l'axe X par la somme totale des barres (le cumul)
+    # Tri des barres par ordre décroissant du total (en sommant les saisons si filtre_saison == "Toutes")
     fig.update_layout(
         xaxis={'categoryorder':'total descending'},
         xaxis_tickangle=-45
@@ -40,7 +45,7 @@ def top_sports():
     return fig 
 
 
-def top_athletes():
+def top_athletes(filtre_saison:str = "Toutes"):
     session = Session()
 
     results = session.query(
@@ -58,8 +63,13 @@ def top_athletes():
         Medailles.Sport
     ).order_by(
         func.count(Medailles.Medal).desc()
-    ).limit(20).all()
+    )
+    
+    if filtre_saison != "Toutes":
+        results = results.filter(Medailles.Season == filtre_saison)
 
+    results = results.limit(20).all()ex
+    
     session.close()
 
     df = pd.DataFrame(results, columns=["Athlete", "Country", "Genre","Sport", "Season", "total"])
